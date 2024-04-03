@@ -15,6 +15,7 @@ class ProductList(BaseModel):
         return [i.itemId for i in value]
 
 
+
 # with open ('test.json', encoding='utf-8')  as f:
 #     data = json.load(f)
 

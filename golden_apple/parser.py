@@ -11,6 +11,7 @@ from .models import ProductList
 
 
 
+
 async def main():
     ids = []
     async with ClientSession(headers=HEADERS) as session:
