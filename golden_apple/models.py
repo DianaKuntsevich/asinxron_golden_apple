@@ -10,7 +10,7 @@ class ProductList(BaseModel):
     count: int
     products: List[ProductDetail]
 
-    @field_validator('products')
+    @field_validator('products') #приводит показатель к нужному значению, можно менять типы данных
     def set_products(cls, value):
         return [i.itemId for i in value]
 

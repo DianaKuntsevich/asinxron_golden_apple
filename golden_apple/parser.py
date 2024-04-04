@@ -14,7 +14,7 @@ from .models import ProductList
 
 async def main():
     ids = []
-    async with ClientSession(headers=HEADERS) as session:
+    async with ClientSession(headers=HEADERS) as session:     #открываем клиентскую сессию, для похода на сайт
         start_data = await get_json(session, f'{PAGES_URL}1')
         start_data = start_data['data']['products']
         start_data = ProductList(**start_data)
@@ -36,6 +36,7 @@ async def main():
         data = [i.products for i in data]
         data = sum(data, [])
         ids.extend(data)
+        pprint(ids)
 
 
 
