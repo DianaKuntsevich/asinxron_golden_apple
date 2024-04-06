@@ -1,16 +1,21 @@
 import asyncio
 import json
+from environs import Env
 
 from aiohttp import ClientSession
 from loguru import logger
 
-from .config import PAGES_URL
 from .models import ProductList, ProductData
+
+env = Env()
+env.read_env()
+
+PAGES_URL = env('PAGES_URL')
 
 
 async def get_json(session: ClientSession, url: str) -> json:
     async with session.get(url) as response:
-        logger.info(response.status)
+        # logger.info(response.status)
         assert response.status == 200
         data = await response.json()
         return data
@@ -55,7 +60,7 @@ async def get_products_ids(session: ClientSession) -> list:
     return ids
 
 
-async def get_products_detail(session: ClientSession, url: str) -> ProductData:
+async def get_products_detail(session: ClientSession, url: str) -> tuple:
     data = await get_json(session, url)
     data = data['data']
-    return ProductData(**data)
+    return ProductData(**data).to_tuple()

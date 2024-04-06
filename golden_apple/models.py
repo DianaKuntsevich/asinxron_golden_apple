@@ -51,20 +51,37 @@ class ProductData(BaseModel):
     def model_post_init(self, __context: Any) -> None:
         self.price = int(next((i.price for i in self.variants if i.itemId == self.id), 0))
 
+        attributes_map = {
+            'описание': 'description',
+            'применение': 'application',
+            'состав': 'composition',
+            'о бренде': 'about_brand',
+            'Дополнительная информация': 'addit_info'
+        }
+
         for desc in self.productDescription:
-            if desc.text == 'описание':
-                self.description = desc.content
-            elif desc.text == 'применение':
-                self.application = desc.content
-            elif desc.text == 'состав':
-                self.composition = desc.content
-            elif desc.text == 'о бренде':
-                self.about_brand = desc.content
-            elif desc.text == 'Дополнительная информация':
-                self.addit_info = desc.content
+            attributes_name = attributes_map.get(desc.text)
+            if attributes_name:
+                setattr(self, attributes_name, desc.content)
+
+        #     if desc.text == 'описание':
+        #         self.description = desc.content
+        #     elif desc.text == 'применение':
+        #         self.application = desc.content
+        #     elif desc.text == 'состав':
+        #         self.composition = desc.content
+        #     elif desc.text == 'о бренде':
+        #         self.about_brand = desc.content
+        #     elif desc.text == 'Дополнительная информация':
+        #         self.addit_info = desc.content
 
         del self.__dict__['productDescription']
         del self.__dict__['variants']
+
+    def to_tuple(self) -> tuple:
+        return tuple(self.__dict__.values())
+
+
 
 # with open('test.json', encoding='utf-8') as f:
 #     data = json.load(f)
