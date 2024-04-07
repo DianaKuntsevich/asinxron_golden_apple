@@ -1,5 +1,3 @@
-import json
-
 from pydantic import BaseModel, field_validator, Field
 from typing import List, Any
 
@@ -64,17 +62,6 @@ class ProductData(BaseModel):
             if attributes_name:
                 setattr(self, attributes_name, desc.content)
 
-        #     if desc.text == 'описание':
-        #         self.description = desc.content
-        #     elif desc.text == 'применение':
-        #         self.application = desc.content
-        #     elif desc.text == 'состав':
-        #         self.composition = desc.content
-        #     elif desc.text == 'о бренде':
-        #         self.about_brand = desc.content
-        #     elif desc.text == 'Дополнительная информация':
-        #         self.addit_info = desc.content
-
         del self.__dict__['productDescription']
         del self.__dict__['variants']
 
@@ -83,9 +70,3 @@ class ProductData(BaseModel):
 
 
 
-# with open('test.json', encoding='utf-8') as f:
-#     data = json.load(f)
-#
-# pd_data = ProductData(**data)
-# for i in pd_data:
-#     print(i)

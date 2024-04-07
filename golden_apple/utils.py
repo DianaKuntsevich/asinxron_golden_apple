@@ -1,10 +1,12 @@
 import asyncio
 import json
+import os
+
 from environs import Env
-
 from aiohttp import ClientSession
-from loguru import logger
+import pandas as pd
 
+from .db_client import get_products
 from .models import ProductList, ProductData
 
 env = Env()
@@ -15,7 +17,6 @@ PAGES_URL = env('PAGES_URL')
 
 async def get_json(session: ClientSession, url: str) -> json:
     async with session.get(url) as response:
-        # logger.info(response.status)
         assert response.status == 200
         data = await response.json()
         return data
@@ -64,3 +65,15 @@ async def get_products_detail(session: ClientSession, url: str) -> tuple:
     data = await get_json(session, url)
     data = data['data']
     return ProductData(**data).to_tuple()
+
+
+async def write_to_excel():
+    golden_apple_path = os.path.dirname(__file__)
+    data_path = os.path.join(golden_apple_path, '../data')
+    if not os.path.exists(data_path):
+        os.mkdir(data_path)
+
+    data = await get_products()
+    columns = ['id', 'Название товара', 'Бренд', 'Тип товара', 'Цена', 'Описание', 'Применение', 'Состав', 'О бренде', 'Дополнительная информация']
+    df = pd.DataFrame(data, columns=columns)
+    df.to_excel(f'{data_path}/data.xlsx', index=False, engine='xlsxwriter')

@@ -1,9 +1,6 @@
-import asyncio
-
 import asyncpg
 from environs import Env
 from asyncpg import Connection
-
 
 
 env = Env()

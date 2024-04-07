@@ -1,27 +1,26 @@
 import asyncio
-import json
+from random import shuffle
 
 from aiohttp import ClientSession, ClientTimeout
 from loguru import logger
-from pprint import pprint
 from funcy import chunks
 from tqdm import tqdm
 from environs import Env
 
-
-from .utils import get_products_ids, get_json, get_products_detail
-from .models import ProductList
+from .config import HEADERS
+from .utils import get_products_ids, get_products_detail, write_to_excel
 from .db_client import insert_data, data_cleaner, create_table
 
 
 env = Env()
 env.read_env()
 
-HEADERS = env('HEADERS')
+
 PROD_URL = env('PROD_URL')
 
 
 async def main():
+
     logger.info('Парсинг начался...')
     await create_table()
     await data_cleaner()
@@ -30,6 +29,7 @@ async def main():
         ids = await get_products_ids(session)
         logger.info(f'Найдено {len(ids)} товаров')
 
+        shuffle(ids) # Перемешиваем айдишники
         for chunk in tqdm(list(chunks(7, ids))):
             tasks = []
             for i in chunk:
@@ -39,7 +39,8 @@ async def main():
             count_saved_data = await insert_data(data)
             logger.info(f'Сохранено {count_saved_data} товаров')
 
-
+    await write_to_excel()
+    logger.info('Парсинг успешно завершен!')
 
 
 
